@@ -1,8 +1,10 @@
 package cl.automind.gamecontrol.android;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 
 import android.app.Activity;
@@ -11,6 +13,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -98,7 +101,19 @@ public class GameControl extends Activity implements SensorEventListener {
 		}
 
 		debug("conectando a servidor");
-		
 	}
+	
+	private InetAddress getBroadcastAddress() throws IOException {
+	    WifiManager wifi = (WifiManager)this.getSystemService(Context.WIFI_SERVICE);
+	    DhcpInfo dhcp = wifi.getDhcpInfo();
+	    // handle null somehow
+
+	    int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+	    byte[] quads = new byte[4];
+	    for (int k = 0; k < 4; k++)
+	      quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+	    return InetAddress.getByAddress(quads);
+	}
+	
 
 }

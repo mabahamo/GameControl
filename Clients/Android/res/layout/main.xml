@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
     android:stretchColumns="0,1"
     android:keepScreenOn="true"
     android:screenOrientation="portrait"
-    >
+    android:layout_width="fill_parent" android:layout_height="fill_parent">
     <TableRow >
    <TextView android:text="Angle:" />
    <TextView android:id="@+id/angle" text="---" />
@@ -16,10 +14,7 @@
    <TextView android:id="@+id/pitch" android:text="---" />
    </TableRow>
    <TableRow>
-   <Button android:id="@+id/testButton" android:text="Test Button"/>
-   <TextView android:id="@+id/test" android:text="---" />
    </TableRow>
-   <TableRow>
-   <TextView android:id="@+id/debug" android:text="debug" />
-   </TableRow>
+   <Button android:text="Calibrar" android:id="@+id/calibrar" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+   <TextView android:id="@+id/debug" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="debug"></TextView>
 </TableLayout>

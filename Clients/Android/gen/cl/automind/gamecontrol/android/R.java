@@ -15,10 +15,9 @@ public final class R {
     }
     public static final class id {
         public static final int angle=0x7f050000;
-        public static final int debug=0x7f050004;
+        public static final int calibrar=0x7f050002;
+        public static final int debug=0x7f050003;
         public static final int pitch=0x7f050001;
-        public static final int test=0x7f050003;
-        public static final int testButton=0x7f050002;
     }
     public static final class layout {
         public static final int main=0x7f030000;
