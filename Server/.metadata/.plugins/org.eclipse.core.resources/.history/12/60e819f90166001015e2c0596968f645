@@ -1,0 +1,21 @@
+package cl.automind.bichos;
+
+import cl.automind.control.server.ControlListenerInterface;
+
+public class GameLogic implements ControlListenerInterface {
+
+	public Bicho bicho;
+	
+	public GameLogic(){
+		bicho = new Bicho(400,300);
+	}
+	
+	@Override
+	public void updateState(int playerId, float angle, float pitch) {
+		int dx = -1 * (int)(angle - 1.234375);
+		int dy = -1 * (int)(pitch - 2.328125);
+		System.out.println("raw: " + angle + "," + pitch + "\n bicho: " + dx + ";" + dy) ;
+		bicho.move(dx,dy);
+	}
+
+}

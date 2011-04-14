@@ -1,0 +1,39 @@
+package cl.automind.control.server;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+
+	private static int port = 1001; /* port the server listens on */
+
+    public static void main (String[] args) throws Exception {
+       ServerSocket serverSock = new ServerSocket(9999);
+       Socket clientSock;
+       BufferedReader in; 
+       PrintWriter out;
+       while(true){
+    	   System.out.println("Waiting for a client...");
+    	   clientSock = serverSock.accept();
+    	   System.out.println("Client connection from " + clientSock.getInetAddress().getHostAddress());
+    	   
+    	   in = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
+    	   out = new PrintWriter(clientSock.getOutputStream(),true);
+    	   
+    	   processClient(in,out);
+    	   
+    	   clientSock.close();
+    	   System.out.println("Client connection closed");
+       }
+    }
+    
+    public static void processClient(BufferedReader in, PrintWriter out) throws Exception{
+    	String line = in.readLine();
+    	while(line != null){
+    		System.out.println("Client msg: " + line);
+    	}
+    }
+}

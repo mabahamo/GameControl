@@ -1,0 +1,50 @@
+package cl.automind.control.server;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+
+public class GameControlServer {
+
+	private ControlListenerInterface listener;
+	
+	/**
+	 * Inicializa el servidor para los gamecontrols
+	 * @param port
+	 * @param maxControls m‡xima cantidad de controles que pueden conectarse
+	 */
+	public GameControlServer(int port, int maxControls){
+		ServerSocket serverSock = new ServerSocket(port);
+	       Socket clientSock;
+	       BufferedReader in; 
+	       PrintWriter out;
+	       while(true){
+	    	   System.out.println("Waiting for a client...");
+	    	   clientSock = serverSock.accept();
+	    	   System.out.println("Client connection from " + clientSock.getInetAddress().getHostAddress());
+	    	   
+	    	   in = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
+	    	   out = new PrintWriter(clientSock.getOutputStream(),true);
+	    	   
+	    	   processClient(in,out);
+	    	   
+	    	   clientSock.close();
+	    	   System.out.println("Client connection closed");
+	       }
+	}
+
+	public void setControlListener(ControlListenerInterface listener) {
+		this.listener = listener;
+	}
+	
+    private static void processClient(BufferedReader in, PrintWriter out) throws Exception{
+    	String line = in.readLine();
+    	while(line != null){
+    		System.out.println("Client msg: " + line);
+    		line = in.readLine();
+    	}
+    }
+}

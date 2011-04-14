@@ -1,0 +1,21 @@
+package cl.automind.bichos;
+
+public class Bicho {
+
+	private int x,y;
+	private Object lock = new Object();
+	
+	public Bicho(int x, int y){
+		this.x = x;
+		this.y = y;
+	}
+	
+	public void move(int x, int y){
+		synchronized(lock){
+			this.x += x;
+			this.y += y;
+		}
+	}
+	
+	
+}

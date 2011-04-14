@@ -1,0 +1,149 @@
+package cl.metaforas.sorpresasmagicas.server;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import javax.security.auth.login.AccountNotFoundException;
+import javax.security.auth.login.CredentialException;
+import javax.security.auth.login.LoginException;
+
+import cl.metaforas.sorpresasmagicas.messages.TeamIdentity;
+import cl.metaforas.sorpresasmagicas.util.CryptoUtil;
+
+import com.sun.sgs.auth.Identity;
+import com.sun.sgs.auth.IdentityAuthenticator;
+import com.sun.sgs.auth.IdentityCredentials;
+import com.sun.sgs.impl.auth.IdentityImpl;
+import com.sun.sgs.impl.auth.NamePasswordCredentials;
+
+
+public class AuthMySQL implements IdentityAuthenticator
+{
+	private static final Logger logger = Logger.getLogger(AuthMySQL.class.getName());
+
+
+	/*
+	 * These properties need to be included in the sgs properties file
+	 */
+	public static final String DB_URL =  "jdbc:postgresql://10.179.82.108/vectores";
+	public static final String DB_USER = "vectores";
+	public static final String DB_PASS = "angindswantswin";
+
+
+	public static HashMap<String,TeamIdentity> storage = new HashMap<String,TeamIdentity>()	;
+
+	private  final String[] validCreds = new String[] { "NameAndPasswordCredentials" };
+	PreparedStatement team,players;
+
+
+	public AuthMySQL(Properties props)
+	{
+		System.out.println("Props "+props.toString());
+
+
+
+	}
+
+
+	/**
+	 * The behavior of this method seems to require it to either return a valid Identity, or throw
+	 * an exception
+	 */
+	public Identity authenticateIdentity(IdentityCredentials id) throws LoginException
+	{
+		if (!(id instanceof NamePasswordCredentials))
+		{
+			throw new LoginException("Unsupported Credential Type");
+		}
+		NamePasswordCredentials cred = (NamePasswordCredentials) id;
+		String username = cred.getName().toLowerCase();
+
+		logger.info("Authenticating user["+username+" --pass : "+new String((cred.getPassword()))+"]");
+		Connection con;
+		try {
+			Class.forName("org.postgresql.Driver");
+			con = DriverManager.getConnection(DB_URL,DB_USER,DB_PASS);
+			if (con == null){
+				logger.severe("Error al conectar a la base de datos");
+				throw new LoginException("Error al conectar con la base de datos");
+			}
+			team = con.prepareStatement("SELECT colegios.nombre as colegio, colegios.com_nom as comuna , teams.nombre as equipo, teams.id as id_equipo, teams.nivel as nivel, teams.password as password from colegios, teams where colegios.rbd = teams.colegio_id and teams.nombre = ?");
+			players = con.prepareStatement("Select players.nombres as nombres, players.apellido_paterno as apellido_paterno, players.apellido_materno as apellido_materno, casilla from players where team_id = ? order by casilla");
+			logger.info("Conectado a mysql for " + username);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			throw new LoginException("Error al conectar con la base de datos");
+		} catch (SQLException e) {
+			logger.severe(e.getLocalizedMessage());
+			e.printStackTrace();
+			throw new LoginException("Error al conectar con la base de datos");
+		}
+
+		String password = new String(cred.getPassword());
+		if (username.indexOf("admin")==0){
+			if (password.equals("iummementedsticelsie")){
+				TeamIdentity i = new TeamIdentity(username,"colegio","comuna",0,-1);
+				AuthMySQL.storage.put(username,i);
+				return new IdentityImpl(username);
+			}
+			else {
+				throw new CredentialException("Admin access unauthorized");
+			}
+		}
+
+		try{
+			team.setString(1,username.toLowerCase());
+
+			//SELECT colleges.name, colleges.city, teams.name, teams.nivel, crypted_password, from teams,colleges where teams.college_id = colleges.id and username  = ? ");
+			ResultSet rs = team.executeQuery();
+			if ( rs.next() )
+			{
+				if (CryptoUtil.hashString(rs.getString("password")).equals(password)){
+					logger.info("Password matched for " + username);
+					TeamIdentity i = new TeamIdentity(username,rs.getString("colegio"),rs.getString("comuna"),rs.getInt("nivel"),rs.getInt("id_equipo"));
+					players.setInt(1, rs.getInt("id_equipo"));
+					ResultSet rs2 = players.executeQuery();
+					while(rs2.next()){
+						i.addPlayer(rs2.getInt("casilla"), rs2.getString("nombres"), rs2.getString("apellido_paterno"), rs2.getString("apellido_materno"));
+					}
+					rs2.close();
+					rs.close();
+					con.close();
+					logger.info("Storing identity");
+					AuthMySQL.storage.put(username,i);
+
+					return new IdentityImpl(username);
+				}
+
+			}else {
+				rs.close();
+			}
+			con.close();
+			logger.warning("Account not found: " + username);
+			throw new AccountNotFoundException();
+
+
+
+
+		} catch (SQLException ex)
+		{
+			logger.severe("Error " + ex.toString());
+			ex.printStackTrace();
+			throw new LoginException("Database Error");
+		}
+
+
+	}
+
+	public String[] getSupportedCredentialTypes()
+	{
+		return validCreds;
+	}
+
+
+}

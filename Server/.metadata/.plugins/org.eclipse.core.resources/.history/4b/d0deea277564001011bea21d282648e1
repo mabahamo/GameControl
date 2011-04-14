@@ -1,0 +1,13 @@
+package cl.automind.control.server;
+
+public class GameControlServer {
+
+	/**
+	 * Inicializa el servidor para los gamecontrols
+	 * @param port
+	 * @param maxControls m‡xima cantidad de controles que pueden conectarse
+	 */
+	public GameControlServer(int port, int maxControls){
+		
+	}
+}

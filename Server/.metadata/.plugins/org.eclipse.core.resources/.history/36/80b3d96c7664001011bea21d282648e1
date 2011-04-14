@@ -1,0 +1,19 @@
+package cl.automind.control.server;
+
+public class GameControlServer {
+
+	private ControlListenerInterface listener;
+	
+	/**
+	 * Inicializa el servidor para los gamecontrols
+	 * @param port
+	 * @param maxControls m‡xima cantidad de controles que pueden conectarse
+	 */
+	public GameControlServer(int port, int maxControls){
+		
+	}
+	
+	public void addControlListener(ControlListenerInterface listener){
+		this.listener = listener;
+	}
+}

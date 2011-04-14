@@ -1,0 +1,28 @@
+package cl.automind.bichos;
+
+import cl.automind.control.server.GameControlServer;
+
+public class Main {
+
+	public static final int PORT = 9999;
+	
+	/**
+	 * @param args
+	 * @throws Exception 
+	 */
+	public static void main(String[] args) throws Exception {
+		GameControlServer gcs = new GameControlServer(9999,12);
+		GameLogic gl = new GameLogic();
+		//GameUsers gu = new GameUsers();
+		
+		//gcs.setAuthListener(gu);
+		gcs.setControlListener(gl);
+		
+		while(true){
+			Thread.yield();
+			Thread.sleep(100);
+		}
+		
+	}
+
+}

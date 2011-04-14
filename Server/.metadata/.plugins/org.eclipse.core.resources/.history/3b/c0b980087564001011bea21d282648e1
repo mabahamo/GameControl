@@ -1,0 +1,19 @@
+package cl.automind.bichos;
+
+import cl.automind.control.server.GameControlServer;
+
+public class Main {
+
+	public static final int PORT = 9999;
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		GameControlServer gcs = new GameControlServer(9999,12);
+
+		gcs.addNewControlListener(this);
+		
+	}
+
+}

@@ -1,0 +1,19 @@
+package cl.automind.bichos;
+
+import javax.swing.JPanel;
+
+public class GamePanel extends JPanel{
+
+	private boolean running = true;
+	private static final long serialVersionUID = -9095003889768687079L;
+
+	public void run(){
+		while(running){
+			gameUpdate();
+			gameRender();
+			paintScreen();
+		}
+	}
+	
+	
+}

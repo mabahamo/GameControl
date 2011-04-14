@@ -1,0 +1,73 @@
+package cl.automind.control.server;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class GameControlServer {
+
+	private ControlListenerInterface listener;
+	Socket clientSock;
+	BufferedReader in;
+	PrintWriter out;
+	ServerSocket serverSock;
+	private int port;
+
+	/**
+	 * Inicializa el servidor para los gamecontrols
+	 * 
+	 * @param port
+	 * @param maxControls
+	 *            m‡xima cantidad de controles que pueden conectarse
+	 * @throws Exception
+	 */
+	public GameControlServer(int port, int maxControls) throws Exception {
+		this.port = port;
+	}
+
+	public void start() {
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				while (true) {
+					ServerSocket serverSock = new ServerSocket(port);
+					System.out.println("Waiting for a client...");
+					clientSock = serverSock.accept();
+					System.out.println("Client connection from "
+							+ clientSock.getInetAddress().getHostAddress());
+
+					in = new BufferedReader(new InputStreamReader(
+							clientSock.getInputStream()));
+					out = new PrintWriter(clientSock.getOutputStream(), true);
+
+					processClient(in, out);
+
+					clientSock.close();
+					System.out.println("Client connection closed");
+				}
+			}
+		};
+		t.start();
+
+	}
+
+	public void setControlListener(ControlListenerInterface listener) {
+		this.listener = listener;
+	}
+
+	private void processClient(BufferedReader in, PrintWriter out)
+			throws Exception {
+		String line = in.readLine();
+		while (line != null) {
+			System.out.println("Client msg: " + line);
+			if (line.contains(";")) {
+				String[] data = line.split(";");
+				listener.updateState(1, Float.parseFloat(data[0]),
+						Float.parseFloat(data[1]));
+			}
+			line = in.readLine();
+		}
+	}
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="0,1"
+    >
+    <TableRow >
+   <TextView android:text="Angle:" />
+   <TextView android:id="@+id/angle" text="---" />
+   </TableRow>
+   <TableRow >
+   <TextView android:text="Pitch:" />
+   <TextView android:id="@+id/pitch" android:text="---" />
+   </TableRow>
+   <TableRow>
+   <Button android:id="@+id/testButton" android:text="Test Button"/>
+   <TextView androidid="@+id/test" android:text="---" />
+   </TableRow>
+   <TableRow>
+   <TextView android:id="@+id/debug" android:text="debug" />
+   </TableRow>
+</TableLayout>

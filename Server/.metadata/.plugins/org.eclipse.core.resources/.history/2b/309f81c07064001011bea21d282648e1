@@ -1,0 +1,18 @@
+package cl.automind.mouseserver;
+
+import java.io.BufferedReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Server {
+
+	private static int port = 1001; /* port the server listens on */
+
+    public static void main (String[] args) throws Exception {
+       ServerSocket serverSock = new ServerSocket(9999);
+       Socket clientSock;
+       BufferedReader in; 
+       PRintWriter out;
+       
+    }
+}

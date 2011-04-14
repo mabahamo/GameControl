@@ -1,0 +1,40 @@
+package cl.automind.bichos;
+
+import java.awt.Dimension;
+
+import javax.swing.JFrame;
+
+import cl.automind.control.server.GameControlServer;
+
+public class Main {
+
+	public static final int PORT = 9999;
+	
+	/**
+	 * @param args
+	 * @throws Exception 
+	 */
+	public static void main(String[] args) throws Exception {
+		GameControlServer gcs = new GameControlServer(9999,12);
+		GameLogic gl = new GameLogic();
+		gcs.setControlListener(gl);
+		gcs.start();
+		
+		GamePanel gp = new GamePanel();
+		Dimension size = new Dimension(800,600);
+		JFrame frame = new JFrame("Bichos");
+		frame.setMinimumSize(size);
+		frame.getContentPane().add(gp);
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.pack();
+	    frame.setVisible(true);
+	    frame.setResizable(false);
+	    
+		while(true){
+			Thread.yield();
+		}
+		
+		
+	}
+
+}

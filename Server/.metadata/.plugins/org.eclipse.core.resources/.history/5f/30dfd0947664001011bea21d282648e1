@@ -1,0 +1,8 @@
+package cl.automind.control.server;
+
+public interface ControlListenerInterface {
+
+	public void updateState(int playerId, float double, float pitch);
+	
+	
+}
