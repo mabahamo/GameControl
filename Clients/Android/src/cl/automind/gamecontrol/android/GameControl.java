@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -27,6 +29,9 @@ public class GameControl extends Activity implements SensorEventListener {
 	PrintWriter out;
 	WifiManager wifiManager;
 	final boolean DEBUG = true;
+	private final int PORT = 9999;
+	private final int DISCOVERY_PORT = 9998;
+	private final String SERVER = "192.168.1.114";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -42,7 +47,7 @@ public class GameControl extends Activity implements SensorEventListener {
 		debug = (TextView) findViewById(R.id.debug);
 		enableWifi();
 		try {
-			sock = new Socket("192.168.15.12", 9999);
+			sock = new Socket(SERVER, PORT);
 			in = new BufferedReader(
 					new InputStreamReader(sock.getInputStream()));
 			out = new PrintWriter(sock.getOutputStream(), true);
@@ -93,6 +98,13 @@ public class GameControl extends Activity implements SensorEventListener {
 		}
 		debug.setText(message);
 	}
+	
+	public void debug(Exception ex){
+		if (!DEBUG){
+			return;
+		}
+		debug(ex.getMessage());
+	}
 
 	private void enableWifi() {
 		wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
@@ -103,6 +115,11 @@ public class GameControl extends Activity implements SensorEventListener {
 		debug("conectando a servidor");
 	}
 	
+	/**
+	 * Construye la direcci—n de broadcast de acuerdo a la direcci—n obtenida y a la m‡scara de la red
+	 * @return
+	 * @throws IOException
+	 */
 	private InetAddress getBroadcastAddress() throws IOException {
 	    WifiManager wifi = (WifiManager)this.getSystemService(Context.WIFI_SERVICE);
 	    DhcpInfo dhcp = wifi.getDhcpInfo();
@@ -113,6 +130,26 @@ public class GameControl extends Activity implements SensorEventListener {
 	    for (int k = 0; k < 4; k++)
 	      quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
 	    return InetAddress.getByAddress(quads);
+	}
+	
+	/**
+	 * Env’a un mensaje buscando el servidor local y espera por una respuesta
+	 */
+	private void searchLocalServer() {
+		try {
+			String data = "HOWDY!";
+			DatagramSocket socket = new DatagramSocket(PORT);
+			socket.setBroadcast(true);
+			DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
+			    getBroadcastAddress(), DISCOVERY_PORT);
+			socket.send(packet);
+	
+			byte[] buf = new byte[1024];
+			DatagramPacket msg = new DatagramPacket(buf, buf.length);
+			socket.receive(msg);
+		} catch(Exception ex){
+			debug(ex);
+		}
 	}
 	
 

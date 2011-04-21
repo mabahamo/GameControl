@@ -27,7 +27,7 @@ public class Example {
 		
 		GamePanel gp = new GamePanel(gl);
 		Dimension size = new Dimension(800,600);
-		JFrame frame = new JFrame("Bichos");
+		JFrame frame = new JFrame("Square");
 		frame.setMinimumSize(size);
 		frame.getContentPane().add(gp);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
